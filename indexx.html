@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Airbnb - Disrupting the Hospitality Industry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --airbnb: #FF5A5F;
+    --airbnb-dark: #e04a4f;
+    --airbnb-light: #fff0f0;
+    --dark: #1a1a2e;
+    --mid: #2d2d44;
+    --text: #f0ede8;
+    --muted: #9b97a8;
+    --card: #22223a;
+    --card2: #1e1e32;
+    --border: rgba(255,255,255,0.08);
+    --gold: #f0a500;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(26,26,46,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 60px;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--airbnb); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color .2s; letter-spacing: .03em; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta { background: var(--airbnb); color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background .2s; font-family: 'DM Sans', sans-serif; text-decoration: none; display: inline-block; }
+  .nav-cta:hover { background: var(--airbnb-dark); }
+
+  /* LIVE BADGE */
+  .live-badge {
+    position: fixed; bottom: 20px; right: 20px; z-index: 200;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 50px; padding: 8px 16px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.75rem; color: var(--muted);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transition: opacity .3s;
+  }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--airbnb);
+    animation: pulse 2s infinite;
+  }
+  .live-dot.loading { background: var(--gold); }
+  .live-dot.error { background: #888; animation: none; }
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(0.85); } }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 80px 2rem 4rem;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(255,90,95,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 20% 80%, rgba(255,90,95,0.06) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-inner { position: relative; text-align: center; max-width: 900px; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,90,95,0.12); border: 1px solid rgba(255,90,95,0.3);
+    color: var(--airbnb); padding: 6px 18px; border-radius: 50px;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    margin-bottom: 2rem;
+    animation: fadeUp .6s ease both;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    animation: fadeUp .7s .1s ease both;
+  }
+  .hero h1 em { color: var(--airbnb); font-style: italic; }
+  .hero-sub {
+    font-size: 1.05rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.5rem;
+    font-weight: 300;
+    animation: fadeUp .7s .2s ease both;
+  }
+  .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: fadeUp .7s .3s ease both; }
+  .btn-primary { background: var(--airbnb); color: #fff; padding: 14px 32px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all .2s; border: 2px solid var(--airbnb); }
+  .btn-primary:hover { background: var(--airbnb-dark); transform: translateY(-2px); }
+  .btn-outline { background: transparent; color: var(--text); padding: 14px 32px; border-radius: 50px; font-weight: 500; font-size: 0.9rem; text-decoration: none; transition: all .2s; border: 2px solid var(--border); }
+  .btn-outline:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+    margin-top: 4rem; padding-top: 3rem;
+    border-top: 1px solid var(--border);
+    animation: fadeUp .7s .4s ease both;
+  }
+  .hstat { text-align: center; }
+  .hstat-num { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 700; color: var(--airbnb); transition: all .4s; }
+  .hstat-lbl { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
+
+  /* SECTIONS */
+  section { padding: 6rem 2rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-eyebrow { font-size: 0.75rem; font-weight: 600; color: var(--airbnb); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .75rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+  .section-title em { color: var(--airbnb); font-style: italic; }
+  .section-sub { color: var(--muted); font-size: 1rem; max-width: 600px; font-weight: 300; margin-bottom: 3rem; }
+
+  /* SURVEY STATS */
+  .stats-section { background: var(--card2); }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5px; background: var(--border); border-radius: 16px; overflow: hidden; }
+  .stat-card { background: var(--card); padding: 2rem 1.5rem; text-align: center; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; color: var(--airbnb); line-height: 1; transition: all .4s; }
+  .stat-lbl { font-size: 0.82rem; color: var(--muted); margin-top: .5rem; font-weight: 500; }
+  .stat-sub { font-size: 0.7rem; color: rgba(155,151,168,0.6); margin-top: .25rem; }
+
+  /* CHARTS SECTION */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.75rem; }
+  .chart-card.full { grid-column: 1/-1; }
+  .chart-title { font-size: 0.88rem; font-weight: 600; color: var(--text); margin-bottom: .5rem; }
+  .chart-sub { font-size: 0.75rem; color: var(--muted); margin-bottom: 1.25rem; }
+  .chart-wrap { position: relative; width: 100%; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+  .legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--airbnb), transparent); }
+  .tl-item { position: relative; margin-bottom: 2.5rem; padding-left: 1.5rem; }
+  .tl-item::before { content: ''; position: absolute; left: -2.15rem; top: .4rem; width: 12px; height: 12px; border-radius: 50%; background: var(--airbnb); border: 2px solid var(--dark); }
+  .tl-year { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--airbnb); font-weight: 500; margin-bottom: .25rem; }
+  .tl-event { font-size: 0.95rem; font-weight: 500; color: var(--text); }
+  .tl-detail { font-size: 0.85rem; color: var(--muted); margin-top: .25rem; }
+
+  /* COMPARISON TABLE */
+  .compare-table { width: 100%; border-collapse: collapse; }
+  .compare-table th { background: rgba(255,90,95,0.1); color: var(--airbnb); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; padding: 14px 20px; text-align: left; border-bottom: 1px solid rgba(255,90,95,0.2); }
+  .compare-table th:first-child { color: var(--muted); }
+  .compare-table td { padding: 14px 20px; font-size: 0.88rem; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .compare-table td:nth-child(2) { color: var(--airbnb); font-weight: 500; }
+  .compare-table td:nth-child(3) { color: var(--text); }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* QUOTES */
+  .quotes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .quote-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.75rem; position: relative; }
+  .quote-card::before { content: '"'; font-family: 'Playfair Display', serif; font-size: 5rem; color: rgba(255,90,95,0.12); position: absolute; top: .5rem; left: 1.2rem; line-height: 1; }
+  .quote-text { font-size: 0.9rem; color: var(--text); line-height: 1.7; margin-bottom: 1rem; font-style: italic; position: relative; z-index: 1; }
+  .quote-attr { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+
+  /* DISRUPTION SECTION */
+  .disruption-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .disruption-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+  .disruption-card h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1rem; }
+  .disruption-card h3 em { color: var(--airbnb); font-style: normal; }
+  .disruption-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+  .big-pct { font-family: 'Playfair Display', serif; font-size: 4rem; font-weight: 700; color: var(--airbnb); line-height: 1; margin-bottom: .5rem; transition: all .4s; }
+  .pct-label { font-size: 0.85rem; color: var(--text); font-weight: 500; }
+  .pct-sub { font-size: 0.78rem; color: var(--muted); margin-top: .25rem; }
+
+  /* TEAM */
+  .team-grid { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .team-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .team-avatar { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,90,95,0.15); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; color: var(--airbnb); flex-shrink: 0; font-family: 'DM Mono', monospace; }
+  .team-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+
+  /* INFO STRIP */
+  .info-strip { background: var(--card2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .info-strip-inner { display: flex; flex-wrap: wrap; justify-content: center; gap: 3rem; padding: 2rem; text-align: center; }
+  .info-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: .25rem; }
+  .info-val { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+
+  /* FOOTER */
+  footer { padding: 3rem 2rem; text-align: center; border-top: 1px solid var(--border); }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--airbnb); margin-bottom: .75rem; }
+  .footer-text { font-size: 0.8rem; color: var(--muted); }
+
+  /* SKELETON SHIMMER */
+  .skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    color: transparent !important;
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,90,95,0.4); border-radius: 3px; }
+
+  @media(max-width: 700px) {
+    nav { padding: 0 1.25rem; }
+    .nav-links { display: none; }
+    .charts-grid { grid-template-columns: 1fr; }
+    .charts-grid .chart-card.full { grid-column: 1; }
+    .disruption-grid { grid-template-columns: 1fr; }
+    section { padding: 4rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LIVE BADGE -->
+<div class="live-badge" id="liveBadge">
+  <div class="live-dot loading" id="liveDot"></div>
+  <span id="liveText">Loading data…</span>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Airbnb Case Study</div>
+  <ul class="nav-links">
+    <li><a href="#survey">Survey Results</a></li>
+    <li><a href="#timeline">Journey</a></li>
+    <li><a href="#disruption">Disruption</a></li>
+    <li><a href="#compare">vs Hotels</a></li>
+    <li><a href="#voices">Voices</a></li>
+  </ul>
+  <a href="https://forms.gle/eEk7JHZUwJpyck9Z7" target="_blank" class="nav-cta">Take Survey</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <h1>How <em>Airbnb</em> Disrupted the<br>Hospitality Industry</h1>
+    <p class="hero-sub">A data-driven case study backed by a primary survey of <span id="heroCount" class="skeleton">Loading...</span> respondents — examining the rise of the sharing economy and its impact on traditional hotels.</p>
+    <div class="hero-btns">
+      <a href="#survey" class="btn-primary">Explore Survey Data</a>
+      <a href="#timeline" class="btn-outline">Read Case Study</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num" id="heroTotal">—</div><div class="hstat-lbl">Survey responses</div></div>
+      <div class="hstat"><div class="hstat-num" id="heroChanged">—</div><div class="hstat-lbl">Say Airbnb changed travel</div></div>
+      <div class="hstat"><div class="hstat-num">$9.9B</div><div class="hstat-lbl">Airbnb revenue 2023</div></div>
+      <div class="hstat"><div class="hstat-num">7.7M+</div><div class="hstat-lbl">Active listings worldwide</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SURVEY RESULTS -->
+<section id="survey" class="stats-section">
+  <div class="container">
+    <p class="section-eyebrow reveal">Primary Research</p>
+    <h2 class="section-title reveal">What <em id="surveyCountTitle" class="skeleton">our survey respondents</em> told us</h2>
+    <p class="section-sub reveal">We conducted a primary survey to understand real consumer preferences between Airbnb and traditional hotels. Here's what the data reveals.</p>
+
+    <div class="stats-grid reveal">
+      <div class="stat-card"><div class="stat-num" id="statTotal">—</div><div class="stat-lbl">Total responses</div><div class="stat-sub">Loading...</div></div>
+      <div class="stat-card"><div class="stat-num" id="statAware">87%</div><div class="stat-lbl">Aware of Airbnb</div><div class="stat-sub">Unaided awareness</div></div>
+      <div class="stat-card"><div class="stat-num" id="statUsed">56%</div><div class="stat-lbl">Have used Airbnb</div><div class="stat-sub">At least once</div></div>
+      <div class="stat-card"><div class="stat-num" id="statPrefer">82%</div><div class="stat-lbl">Prefer Airbnb or flexible</div><div class="stat-sub">vs 9% hotel-only</div></div>
+      <div class="stat-card"><div class="stat-num" id="statRating">3.7</div><div class="stat-lbl">Avg Airbnb rating</div><div class="stat-sub">Out of 5.0</div></div>
+      <div class="stat-card"><div class="stat-num" id="statChanged">85%</div><div class="stat-lbl">Say Airbnb changed travel</div><div class="stat-sub">Significantly or somewhat</div></div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-grid" style="margin-top: 2.5rem;">
+
+      <div class="chart-card reveal">
+        <div class="chart-title">Accommodation preference</div>
+        <div class="chart-sub" id="prefSub">Loading respondents...</div>
+        <div class="legend-row" id="prefLegend">
+          <div class="legend-item"><div class="legend-dot" style="background:#FF5A5F"></div><span id="leg-pref-airbnb">Airbnb (38%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div><span id="leg-pref-depends">Depends (44%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#639922"></div><span id="leg-pref-hotel">Hotel (9%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#888780"></div><span id="leg-pref-none">No pref (9%)</span></div>
+        </div>
+        <div class="chart-wrap" style="height:220px;"><canvas id="prefChart"></canvas></div>
+      </div>
+
+      <div class="chart-card reveal">
+        <div class="chart-title">Has Airbnb changed how people travel?</div>
+        <div class="chart-sub" id="changeSub">Loading respondents...</div>
+        <div class="legend-row">
+          <div class="legend-item"><div class="legend-dot" style="background:#FF5A5F"></div><span id="leg-ch-sig">Yes, significantly (52%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f0a500"></div><span id="leg-ch-some">Yes, somewhat (33%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div><span id="leg-ch-not">Not really (11%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#888780"></div><span id="leg-ch-no">No change (4%)</span></div>
+        </div>
+        <div class="chart-wrap" style="height:220px;"><canvas id="changeChart"></canvas></div>
+      </div>
+
+      <div class="chart-card full reveal">
+        <div class="chart-title">Why is Airbnb appealing? (% selecting each factor)</div>
+        <div class="chart-sub">Respondents could select multiple options</div>
+        <div class="chart-wrap" style="height:280px;"><canvas id="airbnbFactors"></canvas></div>
+      </div>
+
+      <div class="chart-card full reveal">
+        <div class="chart-title">Why do people still prefer hotels? (% selecting each factor)</div>
+        <div class="chart-sub">Respondents could select multiple options</div>
+        <div class="chart-wrap" style="height:280px;"><canvas id="hotelFactors"></canvas></div>
+      </div>
+
+      <div class="chart-card reveal">
+        <div class="chart-title">Age distribution of respondents</div>
+        <div class="chart-sub" id="ageSub">Loading...</div>
+        <div class="legend-row">
+          <div class="legend-item"><div class="legend-dot" style="background:#FF5A5F"></div><span id="leg-age-18">18–24 (72%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div><span id="leg-age-25">25–34 (13%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#639922"></div><span id="leg-age-u18">&lt;18 (8%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f0a500"></div><span id="leg-age-35">35–50 (4%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#888780"></div><span id="leg-age-50">50+ (3%)</span></div>
+        </div>
+        <div class="chart-wrap" style="height:220px;"><canvas id="ageChart"></canvas></div>
+      </div>
+
+      <div class="chart-card reveal">
+        <div class="chart-title">Airbnb experience rating (users only)</div>
+        <div class="chart-sub" id="ratingSubLbl">Loading...</div>
+        <div class="chart-wrap" style="height:220px;"><canvas id="ratingChart"></canvas></div>
+      </div>
+
+      <div class="chart-card full reveal">
+        <div class="chart-title">Has Airbnb negatively impacted traditional hotels?</div>
+        <div class="chart-sub" id="disruptSub">Loading...</div>
+        <div class="legend-row">
+          <div class="legend-item"><div class="legend-dot" style="background:#FF5A5F"></div><span id="leg-dis-yes">Yes, greatly (12%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f0a500"></div><span id="leg-dis-some">Yes, to some extent (47%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div><span id="leg-dis-dom">Hotels still dominant (30%)</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#888780"></div><span id="leg-dis-no">Not sure / No (11%)</span></div>
+        </div>
+        <div class="chart-wrap" style="height:200px;"><canvas id="disruptChart"></canvas></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="container">
+    <p class="section-eyebrow reveal">The Story</p>
+    <h2 class="section-title reveal">From <em>air mattresses</em><br>to a $75B empire</h2>
+    <p class="section-sub reveal">How three roommates who couldn't pay rent built one of the world's most valuable companies.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;" class="reveal">
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-year">2007</div><div class="tl-event">The idea is born</div><div class="tl-detail">Brian Chesky & Joe Gebbia rent out 3 air mattresses in their SF apartment during a design conference. They earn $1,000 in a few days.</div></div>
+        <div class="tl-item"><div class="tl-year">2008</div><div class="tl-event">Airbnb officially launches</div><div class="tl-detail">Nathan Blecharczyk joins as co-founder. The platform launches at the Democratic National Convention. First major test of the model.</div></div>
+        <div class="tl-item"><div class="tl-year">2009</div><div class="tl-event">Y Combinator changes everything</div><div class="tl-detail">Accepted into Y Combinator with $20,000 seed funding. The Craigslist growth hack drives viral user acquisition.</div></div>
+        <div class="tl-item"><div class="tl-year">2011</div><div class="tl-event">Global expansion begins</div><div class="tl-detail">Raises $112M Series B. Expands to Europe. Acquires Accoleo in Germany. 1 million nights booked milestone.</div></div>
+        <div class="tl-item"><div class="tl-year">2014</div><div class="tl-event">'Belong Anywhere' rebrand</div><div class="tl-detail">Launches iconic Bélo logo and emotional brand identity. Revenue hits $250M. Valued at $10B+.</div></div>
+      </div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-year">2016</div><div class="tl-event">Airbnb Experiences launches</div><div class="tl-detail">Expands beyond accommodation to curated local activities hosted by locals. Platform stickiness increases dramatically.</div></div>
+        <div class="tl-item"><div class="tl-year">2017</div><div class="tl-event">First profitable year</div><div class="tl-detail">Revenue reaches $2.6B. Company turns profitable for the first time. 100 million total guests served.</div></div>
+        <div class="tl-item"><div class="tl-year">2019</div><div class="tl-event">Pre-IPO peak</div><div class="tl-detail">Revenue hits $4.8B. Valued at $31B. Files for IPO - then COVID-19 hits.</div></div>
+        <div class="tl-item"><div class="tl-year">2020</div><div class="tl-event">IPO during a pandemic</div><div class="tl-detail">Lays off 1,900 staff. Pivots to long-term stays. IPOs at $68/share, surges to $144 on day one. Raises $3.5B.</div></div>
+        <div class="tl-item"><div class="tl-year">2023</div><div class="tl-event">All-time revenue record</div><div class="tl-detail">Revenue reaches $9.9B. 448M nights booked. 7.7M+ active listings. Market cap ~$85B.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISRUPTION -->
+<section id="disruption" style="background:var(--card2);">
+  <div class="container">
+    <p class="section-eyebrow reveal">The Impact</p>
+    <h2 class="section-title reveal">The <em>disruption</em> by numbers</h2>
+    <p class="section-sub reveal">Secondary data combined with our primary survey paints a clear picture of how Airbnb reshaped the hospitality landscape.</p>
+    <div class="disruption-grid reveal">
+      <div class="disruption-card">
+        <div class="big-pct" id="disruptPct1">85%</div>
+        <div class="pct-label">of our survey respondents</div>
+        <div class="pct-sub">believe Airbnb has significantly or somewhat changed how people travel and choose accommodation</div>
+      </div>
+      <div class="disruption-card">
+        <div class="big-pct" id="disruptPct2">59%</div>
+        <div class="pct-label">of our survey respondents</div>
+        <div class="pct-sub">believe Airbnb has negatively impacted traditional hotel revenues to some extent</div>
+      </div>
+      <div class="disruption-card">
+        <h3><em>Asset-light</em> model</h3>
+        <p>Airbnb owns zero properties yet manages 7.7M+ listings worldwide - more than the top 5 hotel chains combined. This is the defining characteristic of platform-based disruption.</p>
+      </div>
+      <div class="disruption-card">
+        <h3>The <em>network effect</em></h3>
+        <p>More hosts attract more guests. More guests attract more hosts. This self-reinforcing loop made Airbnb's scale nearly impossible to replicate, creating a durable competitive moat.</p>
+      </div>
+      <div class="disruption-card">
+        <h3><em>RevPAR</em> impact on hotels</h3>
+        <p>A Boston University study found that for every 1% increase in Airbnb supply, hotel revenue per available room (RevPAR) drops by ~0.05%. In high-penetration cities, this compounds to millions in lost revenue annually.</p>
+      </div>
+      <div class="disruption-card">
+        <h3>The <em>COVID</em> test</h3>
+        <p>Bookings dropped 72% in March 2020. Yet Airbnb recovered faster than traditional hotels by 2021 - pivoting to isolated home stays and long-term rentals, a flexibility hotels simply couldn't match.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARE -->
+<section id="compare">
+  <div class="container">
+    <p class="section-eyebrow reveal">Head to Head</p>
+    <h2 class="section-title reveal">Airbnb <em>vs</em> Traditional Hotels</h2>
+    <p class="section-sub reveal">A direct comparison of the two models across key metrics - showing where disruption actually happened.</p>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;" class="reveal">
+      <table class="compare-table">
+        <thead><tr><th>Metric</th><th>Airbnb</th><th>Traditional Hotels</th></tr></thead>
+        <tbody>
+          <tr><td>Business model</td><td>Platform / marketplace</td><td>Asset ownership</td></tr>
+          <tr><td>Properties owned</td><td>Zero</td><td>Thousands (owned/managed)</td></tr>
+          <tr><td>Global listings (2023)</td><td>7.7M+ listings</td><td>~700,000 hotels</td></tr>
+          <tr><td>Revenue (2023)</td><td>$9.9 Billion</td><td>Marriott: $23B, Hilton: $10.2B</td></tr>
+          <tr><td>Market cap (2024)</td><td>~$85 Billion</td><td>Marriott ~$60B</td></tr>
+          <tr><td>Avg nightly rate</td><td>$120–$180</td><td>$150–$300</td></tr>
+          <tr><td>Check-in flexibility</td><td>Fully flexible</td><td>Fixed times</td></tr>
+          <tr><td>Customer trust mechanism</td><td>Reviews + ID verification</td><td>Brand standards + staff</td></tr>
+          <tr><td>COVID-19 recovery</td><td>Faster - rural/domestic stays</td><td>Slower - urban/business focus</td></tr>
+          <tr><td>Host/owner earnings</td><td>$57B paid to hosts in 2023</td><td>Retained within chain</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- VOICES -->
+<section id="voices" style="background:var(--card2);">
+  <div class="container">
+    <p class="section-eyebrow reveal">From Our Survey</p>
+    <h2 class="section-title reveal">What people <em>actually</em> think</h2>
+    <p class="section-sub reveal">Selected verbatim responses from our primary survey, capturing real opinions on Airbnb vs hotels.</p>
+    <div class="quotes-grid reveal" id="quotesGrid">
+      <!-- Populated dynamically; falls back to static if API fails -->
+      <div class="quote-card"><p class="quote-text">Airbnb is preferred for longer stays as it gives a residential feel too.</p><div class="quote-attr">25–34 · Occasional traveler</div></div>
+      <div class="quote-card"><p class="quote-text">Airbnb shines for longer, group, or local-experience stays with kitchens and extra space, whereas hotels excel in convenience and reliability for short trips.</p><div class="quote-attr">18–24 · Frequent traveler</div></div>
+      <div class="quote-card"><p class="quote-text">In terms of quality and affordability Airbnb has the upper hand, but in India it still needs to tap into the tier 2–3 city market.</p><div class="quote-attr">25–34 · Frequent traveler</div></div>
+      <div class="quote-card"><p class="quote-text">Choose a hotel if you want to be pampered. Choose Airbnb if you want to save money and feel like you actually live in the city.</p><div class="quote-attr">18–24 · Rare traveler</div></div>
+      <div class="quote-card"><p class="quote-text">Airbnb is great for space and privacy, while hotels are better for service and convenience.</p><div class="quote-attr">18–24 · Frequent traveler</div></div>
+      <div class="quote-card"><p class="quote-text">Airbnb can feel more personal and homey. But it sometimes comes with hidden fees and chores for guests.</p><div class="quote-attr">25–34 · Occasional traveler</div></div>
+      <div class="quote-card"><p class="quote-text">I really enjoyed the Airbnb experience as it felt more comfortable, personal, and homely than a hotel.</p><div class="quote-attr">18–24 · Frequent traveler</div></div>
+      <div class="quote-card"><p class="quote-text">Airbnb tends to win when you want flexibility and space. Hotels still have an edge for professional, short business trips.</p><div class="quote-attr">18–24 · Occasional traveler</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section>
+  <div class="container" style="text-align:center;">
+    <p class="section-eyebrow reveal">The Researchers</p>
+    <h2 class="section-title reveal" style="margin-bottom:2rem;">Meet the <em>team</em></h2>
+    <div class="team-grid reveal" style="justify-content:center;">
+      <div class="team-card"><div class="team-avatar">SR</div><div><div class="team-name">Sumit Rathi</div></div></div>
+      <div class="team-card"><div class="team-avatar">SM</div><div><div class="team-name">Seanna Martin</div></div></div>
+      <div class="team-card"><div class="team-avatar">SA</div><div><div class="team-name">Sanjana Arun</div></div></div>
+      <div class="team-card"><div class="team-avatar">KP</div><div><div class="team-name">Komal Panigrahi</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Airbnb Case Study</div>
+  <p class="footer-text" id="footerText">Loading survey data...</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ============================================================
+//  ⚙️  CONFIGURATION — PUBLISH YOUR SHEET TO WEB
+// ============================================================
+// 1. Open your Google Sheet: https://docs.google.com/spreadsheets/d/1qwjh_QrEEumQkLog8wuXGjbTds97YMsTdjjmydZUUL8/edit?usp=sharing
+// 2. Click File > Share > Publish to web
+// 3. Select your data sheet (probably "Form Responses 1") and format "CSV"
+// 4. Click "Publish" and copy the URL
+// 5. Replace SHEET_CSV_URL below with your published URL
+// 6. The data will auto-update every 5 minutes
+
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRgFBT-qAuETIzekuOi6extXHBxYwM2m0K07-Dg1qbrxtb0Gi_yzABo_6MTR6rCFye3aVDu0e1cx_VZ/pub?gid=792745965&single=true&output=csv';
+
+// Your spreadsheet ID (for backup API approach if needed)
+const SPREADSHEET_ID = '1qwjh_QrEEumQkLog8wuXGjbTds97YMsTdjjmydZUUL8';
+
+// ============================================================
+//  SHEET RANGES — adjust if your sheet tabs/columns differ
+//  These assume Google Forms default output (Sheet1)
+//  Column letters map to your form questions in order
+// ============================================================
+const RANGES = {
+  // Full data sheet — used to count total responses
+  all: 'Sheet1!A:Z',
+};
+
+// ============================================================
+//  CHART COLORS
+// ============================================================
+const AIRBNB = '#FF5A5F', BLUE = '#378ADD', GREEN = '#639922',
+      GOLD   = '#f0a500', GRAY = '#888780',
+      gridC  = 'rgba(255,255,255,0.07)', tickC = '#9b97a8';
+
+const baseOpts = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } }
+};
+
+// ============================================================
+//  CHART INSTANCES (created once, updated on data refresh)
+// ============================================================
+let charts = {};
+
+function initCharts(d) {
+  // Helper: destroy existing chart before recreating
+  const make = (id, config) => {
+    if (charts[id]) charts[id].destroy();
+    charts[id] = new Chart(document.getElementById(id), config);
+  };
+
+  make('prefChart', {
+    type: 'doughnut',
+    data: {
+      labels: ['Airbnb','Depends','Hotel','No preference'],
+      datasets: [{ data: [d.pref_airbnb, d.pref_depends, d.pref_hotel, d.pref_none], backgroundColor: [AIRBNB,BLUE,GREEN,GRAY], borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: { ...baseOpts, cutout: '65%' }
+  });
+
+  make('changeChart', {
+    type: 'doughnut',
+    data: {
+      labels: ['Yes, significantly','Yes, somewhat','Not really','No change'],
+      datasets: [{ data: [d.ch_sig, d.ch_some, d.ch_not, d.ch_no], backgroundColor: [AIRBNB,GOLD,BLUE,GRAY], borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: { ...baseOpts, cutout: '65%' }
+  });
+
+  make('ageChart', {
+    type: 'doughnut',
+    data: {
+      labels: ['18–24','25–34','Under 18','35–50','Above 50'],
+      datasets: [{ data: [d.age_18, d.age_25, d.age_u18, d.age_35, d.age_50], backgroundColor: [AIRBNB,BLUE,GREEN,GOLD,GRAY], borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: { ...baseOpts, cutout: '65%' }
+  });
+
+  make('ratingChart', {
+    type: 'bar',
+    data: {
+      labels: ['1 ★','2 ★','3 ★','4 ★','5 ★'],
+      datasets: [{ data: [d.r1, d.r2, d.r3, d.r4, d.r5], backgroundColor: ['#E24B4A','#F09595','#f0a500','#639922','#1D9E75'], borderRadius: 6, borderSkipped: false }]
+    },
+    options: { ...baseOpts, scales: { x: { grid: { display: false }, ticks: { color: tickC } }, y: { grid: { color: gridC }, ticks: { color: tickC, callback: v => v + '%' } } } }
+  });
+
+  make('airbnbFactors', {
+    type: 'bar',
+    data: {
+      labels: ['More space & privacy','Feels more like home','Lower cost','Unique / local experience','Kitchen & self-catering','Flexible check-in/out'],
+      datasets: [{ data: [d.af1, d.af2, d.af3, d.af4, d.af5, d.af6], backgroundColor: AIRBNB, borderRadius: 5, borderSkipped: false }]
+    },
+    options: { ...baseOpts, indexAxis: 'y', scales: { x: { grid: { color: gridC }, ticks: { color: tickC, callback: v => v + '%' }, max: 80 }, y: { grid: { display: false }, ticks: { color: tickC, font: { size: 12 } } } } }
+  });
+
+  make('hotelFactors', {
+    type: 'bar',
+    data: {
+      labels: ['Safety & security','Professional service & staff','Consistent quality','Amenities (pool, gym etc.)','Better for business travel','Loyalty points & rewards'],
+      datasets: [{ data: [d.hf1, d.hf2, d.hf3, d.hf4, d.hf5, d.hf6], backgroundColor: BLUE, borderRadius: 5, borderSkipped: false }]
+    },
+    options: { ...baseOpts, indexAxis: 'y', scales: { x: { grid: { color: gridC }, ticks: { color: tickC, callback: v => v + '%' }, max: 70 }, y: { grid: { display: false }, ticks: { color: tickC, font: { size: 12 } } } } }
+  });
+
+  make('disruptChart', {
+    type: 'bar',
+    data: {
+      labels: ['Yes, greatly','Yes, to some extent','Hotels still dominant','Not sure / No'],
+      datasets: [{ data: [d.dis_yes, d.dis_some, d.dis_dom, d.dis_no], backgroundColor: [AIRBNB,GOLD,BLUE,GRAY], borderRadius: 6, borderSkipped: false }]
+    },
+    options: { ...baseOpts, scales: { x: { grid: { display: false }, ticks: { color: tickC } }, y: { grid: { color: gridC }, ticks: { color: tickC, callback: v => v + '%' }, max: 60 } } }
+  });
+}
+
+// ============================================================
+//  UPDATE DOM WITH COMPUTED DATA
+// ============================================================
+function updateDOM(d, total) {
+  const pct = (n) => Math.round((n / total) * 100);
+  const set = (id, val) => { const el = document.getElementById(id); if (el) { el.textContent = val; el.classList.remove('skeleton'); } };
+
+  // Hero
+  set('heroCount', total);
+  set('heroTotal', total);
+  set('heroChanged', pct(d.ch_sig + d.ch_some) + '%');
+
+  // Section title
+  const titleEl = document.getElementById('surveyCountTitle');
+  if (titleEl) { titleEl.textContent = total + ' people'; titleEl.classList.remove('skeleton'); }
+
+  // Stat cards
+  set('statTotal', total);
+  set('statAware', pct(d.aware) + '%');
+  set('statUsed', pct(d.used_airbnb) + '%');
+  const preferFlex = d.pref_airbnb + d.pref_depends;
+  set('statPrefer', pct(preferFlex) + '%');
+
+  // Update stat sub
+  const statSubEl = document.querySelector('#statTotal + .stat-sub');
+  if (statSubEl) statSubEl.textContent = now.toLocaleString('en-IN',{month:'long',year:'numeric'});
+
+  // Average rating calculation
+  const ratingUsers = d.r1 + d.r2 + d.r3 + d.r4 + d.r5;
+  const avgRating = ratingUsers > 0
+    ? ((d.r1*1 + d.r2*2 + d.r3*3 + d.r4*4 + d.r5*5) / ratingUsers).toFixed(1)
+    : '—';
+  set('statRating', avgRating);
+  set('ratingSubLbl', `Average: ${avgRating} / 5.0`);
+
+  const changedPct = pct(d.ch_sig + d.ch_some);
+  set('statChanged', changedPct + '%');
+
+  // Disruption big numbers
+  set('disruptPct1', changedPct + '%');
+  const hurtHotelPct = pct(d.dis_yes + d.dis_some);
+  set('disruptPct2', hurtHotelPct + '%');
+
+  // Legend labels
+  const leg = (id, label, count) => set(id, `${label} (${pct(count)}%)`);
+  leg('leg-pref-airbnb',  'Airbnb',             d.pref_airbnb);
+  leg('leg-pref-depends', 'Depends',             d.pref_depends);
+  leg('leg-pref-hotel',   'Hotel',               d.pref_hotel);
+  leg('leg-pref-none',    'No pref',             d.pref_none);
+  leg('leg-ch-sig',  'Yes, significantly',       d.ch_sig);
+  leg('leg-ch-some', 'Yes, somewhat',            d.ch_some);
+  leg('leg-ch-not',  'Not really',               d.ch_not);
+  leg('leg-ch-no',   'No change',                d.ch_no);
+  leg('leg-age-18',  '18–24',                    d.age_18);
+  leg('leg-age-25',  '25–34',                    d.age_25);
+  leg('leg-age-u18', '<18',                      d.age_u18);
+  leg('leg-age-35',  '35–50',                    d.age_35);
+  leg('leg-age-50',  '50+',                      d.age_50);
+  leg('leg-dis-yes',  'Yes, greatly',            d.dis_yes);
+  leg('leg-dis-some', 'Yes, to some extent',     d.dis_some);
+  leg('leg-dis-dom',  'Hotels still dominant',   d.dis_dom);
+  leg('leg-dis-no',   'Not sure / No',           d.dis_no);
+
+  // Chart subtitles
+  ['prefSub','changeSub'].forEach(id => set(id, `${total} respondents`));
+
+  // Footer
+  const now = new Date();
+  set('footerText', `Primary survey of ${total} respondents · ${now.toLocaleString('en-IN',{month:'long',year:'numeric'})}\nCase Study: Airbnb - Disrupting the Hospitality Industry`);
+}
+
+// ============================================================
+//  PARSE RAW ROWS FROM GOOGLE SHEETS
+//  ⚠️  COLUMN MAPPING — Updated to match actual Google Form
+//
+//  Row 0 = header. Data starts at row 1.
+//  Columns (0-based index):
+//    0 = Timestamp
+//    1 = What is your age group?
+//    2 = How often do you travel (for leisure or work)?
+//    3 = Are you aware of Airbnb as an accommodation platform?
+//    4 = Have you ever stayed at an Airbnb?
+//    5 = Have you ever stayed at a traditional hotel
+//    6 = If you had to choose accommodation for your next trip, what would you prefer?
+//    7 = What factors make Airbnb more appealing to you? (Select all that apply)
+//    8 = What factors make traditional hotels more appealing to you?
+//    9 = Do you think Airbnb has changed how people travel and choose accommodation?
+//    10 = Do you think Airbnb has negatively impacted traditional hotels?
+//    11 = On a scale of 1-5, how would you rate your overall experience with Airbnb?
+//    12 = Any additional comments or opinions about Airbnb vs hotels?
+// ============================================================
+const COL = {
+  timestamp:   0,
+  age:         1,
+  travel_freq: 2,
+  aware:       3,
+  used:        4,
+  used_hotel:  5,
+  pref:        6,
+  airbnbWhy:   7,
+  hotelWhy:    8,
+  changed:     9,
+  hurtHotels:  10,
+  rating:      11,
+  comments:    12,
+};
+
+function parseRows(rows) {
+  // Skip header row
+  const data = rows.slice(1);
+  const total = data.length;
+
+  const counts = {
+    aware: 0, used_airbnb: 0,
+    pref_airbnb: 0, pref_depends: 0, pref_hotel: 0, pref_none: 0,
+    ch_sig: 0, ch_some: 0, ch_not: 0, ch_no: 0,
+    age_18: 0, age_25: 0, age_u18: 0, age_35: 0, age_50: 0,
+    r1: 0, r2: 0, r3: 0, r4: 0, r5: 0,
+    af1: 0, af2: 0, af3: 0, af4: 0, af5: 0, af6: 0,
+    hf1: 0, hf2: 0, hf3: 0, hf4: 0, hf5: 0, hf6: 0,
+    dis_yes: 0, dis_some: 0, dis_dom: 0, dis_no: 0,
+  };
+
+  const get = (row, col) => (row[col] || '').toString().trim().toLowerCase();
+
+  data.forEach(row => {
+    // Awareness
+    if (get(row, COL.aware).includes('yes')) counts.aware++;
+
+    // Used Airbnb
+    if (get(row, COL.used).includes('yes')) counts.used_airbnb++;
+
+    // Preference (col 6)
+    const pref = get(row, COL.pref);
+    if (pref.includes('airbnb'))        counts.pref_airbnb++;
+    else if (pref.includes('depends') || pref.includes('both') || pref.includes('depends on')) counts.pref_depends++;
+    else if (pref.includes('hotel') || pref.includes('traditional')) counts.pref_hotel++;
+    else                                counts.pref_none++;
+
+    // Changed travel (col 9)
+    const ch = get(row, COL.changed);
+    if (ch.includes('significantly'))   counts.ch_sig++;
+    else if (ch.includes('somewhat') || ch.includes('yes, somewhat')) counts.ch_some++;
+    else if (ch.includes('not really')) counts.ch_not++;
+    else if (ch.includes('no change') || ch.includes('no,')) counts.ch_no++;
+
+    // Age (col 1)
+    const age = get(row, COL.age);
+    if (age.includes('18') && age.includes('24'))       counts.age_18++;
+    else if (age.includes('25') && age.includes('34'))  counts.age_25++;
+    else if (age.includes('under 18') || age.includes('<18') || age.includes('below 18')) counts.age_u18++;
+    else if (age.includes('35') && age.includes('50'))  counts.age_35++;
+    else if (age.includes('50') || age.includes('above 50') || age.includes('50+')) counts.age_50++;
+
+    // Rating (1–5) (col 11)
+    const r = parseInt(get(row, COL.rating).charAt(0));
+    if (!isNaN(r) && r >= 1 && r <= 5) counts['r' + r]++;
+
+    // Airbnb appeal factors (checkbox — values separated by commas or semicolons) (col 7)
+    const af = get(row, COL.airbnbWhy);
+    if (af.includes('space') || af.includes('privacy'))   counts.af1++;
+    if (af.includes('home') || af.includes('homely') || af.includes('homey')) counts.af2++;
+    if (af.includes('cost') || af.includes('cheaper') || af.includes('affordable') || af.includes('lower') || af.includes('price')) counts.af3++;
+    if (af.includes('unique') || af.includes('local') || af.includes('experience')) counts.af4++;
+    if (af.includes('kitchen') || af.includes('self') || af.includes('catering')) counts.af5++;
+    if (af.includes('flexible') || af.includes('check')) counts.af6++;
+
+    // Hotel preference factors (col 8)
+    const hf = get(row, COL.hotelWhy);
+    if (hf.includes('safety') || hf.includes('secure') || hf.includes('security')) counts.hf1++;
+    if (hf.includes('service') || hf.includes('staff') || hf.includes('professional')) counts.hf2++;
+    if (hf.includes('consistent') || hf.includes('quality') || hf.includes('reliability')) counts.hf3++;
+    if (hf.includes('amenit') || hf.includes('pool') || hf.includes('gym')) counts.hf4++;
+    if (hf.includes('business') || hf.includes('professional')) counts.hf5++;
+    if (hf.includes('loyal') || hf.includes('reward') || hf.includes('points') || hf.includes('membership')) counts.hf6++;
+
+    // Disruption impact (col 10)
+    const dis = get(row, COL.hurtHotels);
+    if (dis.includes('yes, greatly') || dis.includes('greatly'))         counts.dis_yes++;
+    else if (dis.includes('yes, to some extent') || dis.includes('to some extent') || dis.includes('somewhat')) counts.dis_some++;
+    else if (dis.includes('still dominant') || dis.includes('dominant'))  counts.dis_dom++;
+    else                                                                  counts.dis_no++;
+  });
+
+  // Convert raw counts to percentages (for charts)
+  const pct = (n) => total > 0 ? Math.round((n / total) * 100) : 0;
+  const users = counts.r1 + counts.r2 + counts.r3 + counts.r4 + counts.r5;
+  const rPct = (n) => users > 0 ? Math.round((n / users) * 100) : 0;
+  const multiPct = (n) => total > 0 ? Math.round((n / total) * 100) : 0;
+
+  return {
+    total,
+    // Raw counts needed for DOM %
+    aware:          counts.aware,
+    used_airbnb:    counts.used_airbnb,
+    pref_airbnb:    counts.pref_airbnb,
+    pref_depends:   counts.pref_depends,
+    pref_hotel:     counts.pref_hotel,
+    pref_none:      counts.pref_none,
+    ch_sig:         counts.ch_sig,
+    ch_some:        counts.ch_some,
+    ch_not:         counts.ch_not,
+    ch_no:          counts.ch_no,
+    age_18:         counts.age_18,
+    age_25:         counts.age_25,
+    age_u18:        counts.age_u18,
+    age_35:         counts.age_35,
+    age_50:         counts.age_50,
+    // Chart data (percentages)
+    r1: rPct(counts.r1), r2: rPct(counts.r2), r3: rPct(counts.r3),
+    r4: rPct(counts.r4), r5: rPct(counts.r5),
+    af1: multiPct(counts.af1), af2: multiPct(counts.af2), af3: multiPct(counts.af3),
+    af4: multiPct(counts.af4), af5: multiPct(counts.af5), af6: multiPct(counts.af6),
+    hf1: multiPct(counts.hf1), hf2: multiPct(counts.hf2), hf3: multiPct(counts.hf3),
+    hf4: multiPct(counts.hf4), hf5: multiPct(counts.hf5), hf6: multiPct(counts.hf6),
+    dis_yes: pct(counts.dis_yes), dis_some: pct(counts.dis_some),
+    dis_dom: pct(counts.dis_dom), dis_no: pct(counts.dis_no),
+  };
+}
+
+// ============================================================
+//  FETCH FROM GOOGLE SHEETS CSV (PUBLISHED TO WEB)
+// ============================================================
+async function fetchSheetData() {
+  const dot  = document.getElementById('liveDot');
+  const text = document.getElementById('liveText');
+
+  dot.className  = 'live-dot loading';
+  text.textContent = 'Fetching latest data…';
+
+  try {
+    const res = await fetch(SHEET_CSV_URL);
+    if (!res.ok) {
+      throw new Error('Failed to fetch CSV: ' + res.status);
+    }
+    const csvText = await res.text();
+
+    // Parse CSV - handle quoted values properly
+    const rows = [];
+    const lines = csvText.split('\n');
+    lines.forEach(line => {
+      const row = [];
+      let current = '';
+      let insideQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === ',' && !insideQuotes) {
+          row.push(current.replace(/^"|"$/g, '').trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      if (current) row.push(current.replace(/^"|"$/g, '').trim());
+      rows.push(row);
+    });
+    if (rows.length < 2) throw new Error('No response data found in sheet.');
+
+    const d = parseRows(rows);
+    updateDOM(d, d.total);
+    initCharts(d);
+
+    dot.className  = 'live-dot';
+    const now = new Date();
+    text.textContent = `Live · ${d.total} responses · Updated ${now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+
+  } catch (err) {
+    console.error('Google Sheets CSV fetch failed:', err);
+    dot.className = 'live-dot error';
+    text.textContent = 'Live sync unavailable — showing cached data';
+
+    // Initialise with hardcoded fallback data so charts still render
+    initCharts(FALLBACK);
+  }
+}
+
+// ============================================================
+//  FALLBACK DATA (original values — used if API not set up yet)
+// ============================================================
+const FALLBACK = {
+  total: 211,
+  aware: 184, used_airbnb: 118,
+  pref_airbnb: 80, pref_depends: 93, pref_hotel: 19, pref_none: 19,
+  ch_sig: 110, ch_some: 70, ch_not: 23, ch_no: 8,
+  age_18: 152, age_25: 27, age_u18: 17, age_35: 8, age_50: 7,
+  r1: 8, r2: 4, r3: 30, r4: 34, r5: 24,
+  af1: 65, af2: 62, af3: 58, af4: 52, af5: 44, af6: 40,
+  hf1: 58, hf2: 54, hf3: 53, hf4: 48, hf5: 35, hf6: 28,
+  dis_yes: 12, dis_some: 47, dis_dom: 30, dis_no: 11,
+};
+
+// ============================================================
+//  SCROLL REVEAL
+// ============================================================
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ============================================================
+//  BOOT
+// ============================================================
+(async () => {
+  await fetchSheetData();
+
+  // Auto-refresh every 5 minutes
+  setInterval(fetchSheetData, 5 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
